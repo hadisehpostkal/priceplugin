@@ -74,7 +74,7 @@ register_deactivation_hook(__FILE__, 'pluginprefix_deactivation');
 
 function prices_load_scripts()
 {
-    wp_enqueue_style('lotmgr_map_style', plugins_url('/css/style.css', __FILE__));
+    wp_enqueue_style('prices_style', plugins_url('/css/style.css', __FILE__));
 }
 
 add_action('wp_enqueue_scripts', 'prices_load_scripts');

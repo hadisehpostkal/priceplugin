@@ -6,6 +6,7 @@
 }
 
 .custom-header {
+    text-align: start;
     font-weight: 600;
     font-style:normal;
 }
