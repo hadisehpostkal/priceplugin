@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: PricePlugin
- * Plugin URI: https://daneshjooyar.com/plugins/PricPlugin
+ * Plugin URI: https://flexgold.com/plugins/PricPlugin
  * Description:With this plugin product prices are displayed
  * Author: Hadiseh postkal
  * Author URI: --
