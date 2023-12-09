@@ -1,0 +1,21 @@
+
+.custom-common {
+    font-family: 'Montserrat';
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+.custom-header {
+    font-weight: 600;
+    font-style:normal;
+}
+
+.custom-cell {
+    font-weight: 300;
+    font-style: italic;
+    color: #969BB4;
+}
+
+.custom-cell-name {
+    padding: 1%;
+}
