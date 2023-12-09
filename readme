@@ -1,0 +1,17 @@
+# Das Plugin funktioniert wie folgt:
+shorcode:
+ [Preisliste metal='silber' value='advanced' status='Verkaufpreis' lng='EN'],
+ [Preisliste metal='silber' value='advanced' status='Verkaufspreis' lng='DE']
+Oder
+  [Preisliste metal='silber' value='advanced' status='Verkaufspreis']
+
+Metal:
+gold, silber, platin, palladium
+value:
+standard, advanced, superior, institutional
+status:
+Kaufpreis, Verkaufpreis
+Lng: DE, EN . Die Vorauswahl ist auf DE eingestellt.
+Aktualisiere durch Aufruf dieses Links (Der Link wird in Domainfactory für die automatische Ausführung gespeichert):
+/Pfad/wordpress/wp-content/plugins/PricePlugin/Cronjob.php
+diese pfad muss in database.php angepasst werden. require('/opt/lampp/htdocs/wordpress/wp-load.php'); //server address
