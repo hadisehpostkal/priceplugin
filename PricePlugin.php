@@ -10,9 +10,8 @@
  */
 
 
-function pluginprefix_install()
-{
-    //create Tables
+function pluginprefix_install() {
+    // Create Tables
     global $wpdb, $table_prefix;
     $tables = array(
         $table_prefix . "Gold",
@@ -20,34 +19,43 @@ function pluginprefix_install()
         $table_prefix . "Palladium",
         $table_prefix . "Platinum",
     );
+
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
     foreach ($tables as $table) {
         $create_table = "
-CREATE TABLE {$table} (
-id int(11) NOT NULL AUTO_INCREMENT,
-Name varchar(512) COLLATE utf8_persian_ci NOT NULL,
-BasicSale double  NOT NULL,
-AvancedSale double  NOT NULL,
-SuperiorSale double  NOT NULL,
-InstutionalSale double  NOT NULL,
-BasicPurchase double  NOT NULL,
-AvancedPurchase double  NOT NULL,
-SuperiorPurchase double  NOT NULL,
-InstutionalPurchase double  NOT NULL,
-Date TIMESTAMP NOT NULL DEFAULT CURRENT_DATE(),
-PRIMARY KEY (id)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-";
-        dbDelta($create_table);
+            CREATE TABLE {$table} (
+                id int(11) NOT NULL AUTO_INCREMENT,
+                Name varchar(512) COLLATE utf8_persian_ci NOT NULL,
+                BasicSale double NOT NULL,
+                AvancedSale double NOT NULL,
+                SuperiorSale double NOT NULL,
+                InstutionalSale double NOT NULL,
+                BasicPurchase double NOT NULL,
+                AvancedPurchase double NOT NULL,
+                SuperiorPurchase double NOT NULL,
+                InstutionalPurchase double NOT NULL,
+                Date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id)
+            ) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+        ";
+
+        $wpdb->query($create_table);
+        $wpdb_errors = $wpdb->last_error;
+
+        if (!empty($wpdb_errors)) {
+            error_log("Error creating table $table: $wpdb_errors");
+        }
     }
-    //cronjob run
+
+    // Cron job run
     if (!wp_next_scheduled('scheduled_product_tasks')) {
         wp_schedule_event(time(), 'products_five_seconds', 'scheduled_product_tasks');
     }
-
 }
 
 register_activation_hook(__FILE__, 'pluginprefix_install');
+
 function pluginprefix_deactivation()
 {
     // To remove the table
