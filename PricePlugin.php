@@ -116,7 +116,7 @@ function add_kaufpreise($attr, $content = null)
     }
     ob_start();
     $res = $wpdb->get_row("SELECT Date FROM $table_gold ORDER BY id ASC LIMIT 1");
-    $timestamp = $res->Date;
+    $timestamp = (!empty($res) && isset($res->Date)) ? $res->Date : '';
 
     if ($option['status'] == 'Kaufpreis' && $option['lng'] == 'EN')
         $title = 'Sale price';
