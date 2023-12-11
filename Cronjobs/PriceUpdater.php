@@ -1,5 +1,4 @@
 <?php
-
 class PriceUpdater
 {
     private $wpdb;
@@ -23,6 +22,7 @@ class PriceUpdater
             "http" => [
                 "header" => "Authorization: Bearer $token",
                 "method" => "GET",
+                "protocol_version" => 1.1, // Aktualisiere das HTTP-Protokoll
             ],
         ];
         $context = stream_context_create($options);
@@ -35,7 +35,7 @@ class PriceUpdater
         return $data;
     }
 
-    private function get_price($data, $step, $status, $metall): mixed
+    private function get_price($data, $step, $status, $metall)
     {
         $result = 0;
         if ($status == "Sale")

@@ -1,3 +1,4 @@
 <?php
 define('SHORTINIT', true);
-require('/opt/lampp/htdocs/wordpress/wp-load.php'); //server address
+require('/home/zoxitixe/www/dev.flexgold.com/wp-load.php');
+global $wpdb;

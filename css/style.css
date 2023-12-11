@@ -3,12 +3,14 @@
     font-family: 'Montserrat';
     font-size: 18px;
     letter-spacing: 1px;
+    color: #ffffff;
 }
 
 .custom-header {
     text-align: start;
     font-weight: 600;
     font-style:normal;
+    color: #ffffff;
 }
 
 .custom-cell {
@@ -19,4 +21,5 @@
 
 .custom-cell-name {
     padding: 1%;
+    color: #969BB4;
 }
