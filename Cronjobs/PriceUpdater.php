@@ -39,7 +39,16 @@ class PriceUpdater
     {
         $result = 0;
         if ($status == "Sale")
-            $result = (double)$data["CHF"][$step][$status][$metall][0];
+            switch ($step) {
+                case "Institutional" :  $result = (double)$data["CHF"][$step][$status][$metall][0];
+                    break;
+                case "Advanced" :  $result = (double)$data["CHF"][$step][$status][$metall]["0.01"];
+                    break;
+                case "Basic" :  $result = (double)$data["CHF"][$step][$status][$metall]["0.02"];
+                    break;
+                case "Superior" :  $result = (double)$data["CHF"][$step][$status][$metall]["0.005"];
+
+            }
         if ($status == "Purchase")
             $result = (double)$data["CHF"][$step][$status][$metall];
 

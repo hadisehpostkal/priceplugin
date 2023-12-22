@@ -141,34 +141,34 @@ function add_kaufpreise($attr, $content = null)
                     $date = date("d.m.Y H:i", strtotime($timestamp)) . " Uhr";
                 ?>
                 stand: <?= $date ?></td>
-            <td class="custom-common custom-cell">
+            <!--<td class="custom-common custom-cell">
                 55.81 chf /g
-            </td>
+            </td> -->
         </tr>
         <?php foreach ($result as $row) {
             switch (true) {
-                case $option['value'] == 'standard' && $option['status'] == 'Kaufpreis' :
+                case $option['value'] == 'standard' && $option['status'] == 'Verkaufpreis' :
                     $stufe = $row->BasicPurchase;
                     break;
-                case $option['value'] == 'standard' && $option['status'] == 'Verkaufpreis' :
+                case $option['value'] == 'standard' && $option['status'] == 'Kaufpreis' :
                     $stufe = $row->BasicSale;
                     break;
-                case  $option['value'] == 'advanced' && $option['status'] == 'Kaufpreis':
+                case  $option['value'] == 'advanced' && $option['status'] == 'Verkaufpreis':
                     $stufe = $row->AvancedPurchase;
                     break;
-                case  $option['value'] == 'advanced' && $option['status'] == 'Verkaufpreis':
+                case  $option['value'] == 'advanced' && $option['status'] == 'Kaufpreis':
                     $stufe = $row->AvancedSale;
                     break;
-                case $option['value'] == 'superior' && $option['status'] == 'Kaufpreis':
+                case $option['value'] == 'superior' && $option['status'] == 'Verkaufpreis':
                     $stufe = $row->SuperiorPurchase;
                     break;
-                case $option['value'] == 'superior' && $option['status'] == 'Verkaufpreis':
+                case $option['value'] == 'superior' && $option['status'] == 'Kaufpreis':
                     $stufe = $row->SuperiorSale;
                     break;
-                case $option['value'] == 'institutional' && $option['status'] == 'Kaufpreis':
+                case $option['value'] == 'institutional' && $option['status'] == 'Verkaufpreis':
                     $stufe = $row->InstutionalPurchase;
                     break;
-                case $option['value'] == 'institutional' && $option['status'] == 'Verkaufpreis':
+                case $option['value'] == 'institutional' && $option['status'] == 'Kaufpreis':
                     $stufe = $row->InstutionalSale;
                     break;
             }
