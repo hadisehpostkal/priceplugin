@@ -8,16 +8,201 @@
  * Version: 1.0.0
  * License:  later
  */
+//Prevent script from executing on direct access
+if (defined('ABSPATH')) {
+    require_once ABSPATH . 'wp-load.php';
+} else {
+    require_once dirname(__DIR__) . '/wp-load.php';
+}
+require_once 'Cronjobs/PriceUpdater.php';
+add_action('admin_menu', 'price_update_options_page');
+add_action('admin_init', 'price_update_register_my_setting');
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'settings_link');
 
+function price_update_options_page()
+{
+    add_menu_page(
+        'Price-Update flexgold',// browser title
+        'PriceUpdate',
+        'manage_options',
+        'price_update',
+        'price_update_options_view',
+        "dashicons-money",
+        110
+    );
+}
 
-function pluginprefix_install() {
+function price_update_register_my_setting()
+{
+    volt_view();
+    htaccess_view();
+    token_view();
+}
+
+// Erzeuge den Inhalt der Optionen-Seite
+function price_update_options_view()
+{
+    return include 'admin/admin-view.php';
+}
+
+function settings_link($links)
+{
+    $mylinks = array(
+        '<a href="' . admin_url('admin.php?page=price_update') . '">Settings</a>',
+    );
+    $actions = array_merge($links, $mylinks);
+    return $actions;
+}
+
+function volt_view()
+{
+    $volts = array("Advanced", "Basic", "Institutional", "Superior");
+    foreach ($volts as $volt) {
+
+        add_settings_field(
+            $volt,
+            esc_html__($volt, 'default'),
+            'price_update_options_volt_value',
+            'price_update',
+            'default',
+            array(
+                'id' => $volt,  // Unique ID for the field
+                'options' => get_volts_values(),
+            )
+        );
+        register_setting('price_update', $volt);
+    }
+}
+
+function get_volts_values()
+{
+    $volt_werte = array("0", "0.0025", "0.005", "0.0075", "0.01", "0.0125", "0.015", "0.0175", "0.02", "0.0225", "0.025", "0.0275", "0.03", "0.0325", "0.035", "0.0375", "0.04", "0.0425", "0.045", "0.0475", "0.05");
+    $options = array();
+    foreach ($volt_werte as $wert) {
+
+        $status_title = $wert;
+
+        $options[$status_title] = esc_html__($status_title);
+
+    }
+    return $options;
+}
+
+function price_update_options_volt_value($args)
+{
+    $field_id = $args['id']; // Name of the select field
+    $field_options = $args['options']; // Volts values
+
+    echo "<br><label for='$field_id'>" . esc_html__($args['label']) . "</label>";
+    echo "<select name='$field_id' style='margin-left: 10px;'>"; // Adjust the margin-left value as needed
+
+    foreach ($field_options as $value => $label) {
+        $selected = db_get_volt_value($value, $field_id);
+        echo "<option value='$value' $selected>$label</option>";
+    }
+
+    echo "</select><br><br>";
+
+}
+
+function htaccess_view()
+{
+
+    add_settings_field(
+        'htaccess_field_user',
+        esc_html__('htaccess', 'default'),
+        function ()  // Callback for view/html
+        {
+            echo "<br><label for='username' >Username:</label><br>";
+            echo "<input type='text' name='htaccess_field_user' id='htaccess_field_user' value='" . esc_attr(get_option('htaccess_field_user')) . "'><br>";
+        },
+        'price_update',
+    );
+
+    add_settings_field(
+        'htaccess_field_pass',
+        esc_html__('', 'default'),
+        function () // Callback for view/html
+        {
+            echo "<label for='password'>Password:</label><br>";
+            echo "<input type='password' name='htaccess_field_pass' id='htaccess_field_pass' value='" . esc_attr(get_option('htaccess_field_pass')) . "'><br><br>";
+
+        },
+        'price_update',
+    );
+    register_setting('price_update', 'htaccess_field_user');
+    register_setting('price_update', 'htaccess_field_pass');
+}
+
+function token_view()
+{
+    add_settings_field(
+        'token_field_token', // Field ID
+        esc_html__('Token und URL', 'default'), // Field title
+        function ()  // Callback for view/html
+        {
+            echo "<br><label for='token_field_token'>Token:</label><br>";
+            echo "<input type='text' name='token_field_token' id='token_field_token' value='" . esc_attr(get_option('token_field_token')) . "'><br>";
+        },
+        'price_update', // Page on which to add the settings field
+    );
+
+    add_settings_field(
+        'token_field_url', // Field ID
+        esc_html__('', 'default'), // Field title
+        function () // Callback for view/html
+        {
+            echo "<label for='token_field_url'>URL:</label><br>";
+            echo "<input type='url' name='token_field_url' id='token_field_url' value='" . esc_attr(get_option('token_field_url')) . "'>";
+        },
+        'price_update', // Page on which to add the settings field
+    );
+    register_setting('price_update', 'token_field_token');
+    register_setting('price_update', 'token_field_url');
+}
+
+//combobox mit value aus datenbank befüllen
+function db_get_volt_value($status_id, $volt)
+{
+    global $wpdb;
+
+    $step_info = $wpdb->prefix . "options";
+    $selectedValue = '';
+
+    $options = $wpdb->get_results("SELECT * FROM $step_info");
+    if (!$options) {
+        die('Error fetching data: ' . $wpdb->last_error);
+    }
+
+    foreach ($options as $option) {
+        switch ($volt) {
+            case "Institutional":
+            case "Advanced":
+            case "Superior":
+            case "Basic":
+                $selectedValue = ($volt == $option->option_name && $status_id == $option->option_value) ? ' selected' : '';
+                break;
+            case "AnotherField":
+                // Handle AnotherField comparison
+                break;
+        }
+        if ($selectedValue) {
+            break;
+        }
+    }
+
+    return $selectedValue;
+}
+
+function pluginprefix_install()
+{
     // Create Tables
-    global $wpdb, $table_prefix;
+    global $wpdb;
     $tables = array(
-        $table_prefix . "Gold",
-        $table_prefix . "Silver",
-        $table_prefix . "Palladium",
-        $table_prefix . "Platinum",
+        $wpdb->prefix . "Gold",
+        $wpdb->prefix . "Silver",
+        $wpdb->prefix . "Palladium",
+        $wpdb->prefix . "Platinum",
     );
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -47,7 +232,6 @@ function pluginprefix_install() {
             error_log("Error creating table $table: $wpdb_errors");
         }
     }
-
     // Cron job run
     if (!wp_next_scheduled('scheduled_product_tasks')) {
         wp_schedule_event(time(), 'products_five_seconds', 'scheduled_product_tasks');
@@ -59,12 +243,12 @@ register_activation_hook(__FILE__, 'pluginprefix_install');
 function pluginprefix_deactivation()
 {
     // To remove the table
-    global $wpdb, $table_prefix;
+    global $wpdb;
     $tables = array(
-        $table_prefix . "Gold",
-        $table_prefix . "Silver",
-        $table_prefix . "Palladium",
-        $table_prefix . "Platinum",
+        $wpdb->prefix . "Gold",
+        $wpdb->prefix . "Silver",
+        $wpdb->prefix . "Palladium",
+        $wpdb->prefix . "Platinum",
     );
     foreach ($tables as $table) {
         $sql = "DROP TABLE IF EXISTS $table";
@@ -89,15 +273,15 @@ add_action('wp_enqueue_scripts', 'prices_load_scripts');
 
 function add_kaufpreise($attr, $content = null)
 {
-    global $wpdb, $table_prefix;
-    $table_gold = $table_prefix . "Gold";
-    $table_silber = $table_prefix . "Silver";
-    $table_palladium = $table_prefix . "Palladium";
-    $table_platin = $table_prefix . "Platinum";
+    global $wpdb;
+    $table_gold = $wpdb->prefix . "Gold";
+    $table_silber = $wpdb->prefix . "Silver";
+    $table_palladium = $wpdb->prefix . "Palladium";
+    $table_platin = $wpdb->prefix . "Platinum";
     $option = shortcode_atts([
         'metal' => '',
-        'value' => '',
-        'status' => '',
+        'volt' => '',
+        'type' => '',
         'lng' => '',
     ], $attr);
     switch ($option['metal']) {
@@ -118,17 +302,16 @@ function add_kaufpreise($attr, $content = null)
     $res = $wpdb->get_row("SELECT Date FROM $table_gold ORDER BY id ASC LIMIT 1");
     $timestamp = (!empty($res) && isset($res->Date)) ? $res->Date : '';
 
-    if ($option['status'] == 'Kaufpreis' && $option['lng'] == 'EN')
+    if ($option['type'] == 'Kaufpreis' && $option['lng'] == 'EN')
         $title = 'Sale price';
-    elseif ($option['status'] == 'Verkaufpreis' && $option['lng'] == 'EN')
+    elseif ($option['type'] == 'Verkaufspreis' && $option['lng'] == 'EN')
         $title = 'Purchase price';
     else
-        $title = $option['status'];
+        $title = $option['type'];
     ?>
     <table style="width:100%">
         <tr>
-            <th class="custom-common custom-header "><?= $title; ?>
-                *
+            <th class="custom-common custom-header "><?= $title; ?>*
             </th>
             <th></th>
         </tr>
@@ -140,35 +323,35 @@ function add_kaufpreise($attr, $content = null)
                 else
                     $date = date("d.m.Y H:i", strtotime($timestamp)) . " Uhr";
                 ?>
-                stand: <?= $date ?></td>
+                Stand: <?= $date ?></td>
             <!--<td class="custom-common custom-cell">
                 55.81 chf /g
             </td> -->
         </tr>
         <?php foreach ($result as $row) {
             switch (true) {
-                case $option['value'] == 'standard' && $option['status'] == 'Verkaufpreis' :
+                case $option['volt'] == 'standard' && $option['type'] == 'Verkaufspreis' :
                     $stufe = $row->BasicPurchase;
                     break;
-                case $option['value'] == 'standard' && $option['status'] == 'Kaufpreis' :
+                case $option['volt'] == 'standard' && $option['type'] == 'Kaufpreis' :
                     $stufe = $row->BasicSale;
                     break;
-                case  $option['value'] == 'advanced' && $option['status'] == 'Verkaufpreis':
+                case  $option['volt'] == 'advanced' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->AvancedPurchase;
                     break;
-                case  $option['value'] == 'advanced' && $option['status'] == 'Kaufpreis':
+                case  $option['volt'] == 'advanced' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->AvancedSale;
                     break;
-                case $option['value'] == 'superior' && $option['status'] == 'Verkaufpreis':
+                case $option['volt'] == 'superior' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->SuperiorPurchase;
                     break;
-                case $option['value'] == 'superior' && $option['status'] == 'Kaufpreis':
+                case $option['volt'] == 'superior' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->SuperiorSale;
                     break;
-                case $option['value'] == 'institutional' && $option['status'] == 'Verkaufpreis':
+                case $option['volt'] == 'institutional' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->InstutionalPurchase;
                     break;
-                case $option['value'] == 'institutional' && $option['status'] == 'Kaufpreis':
+                case $option['volt'] == 'institutional' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->InstutionalSale;
                     break;
             }

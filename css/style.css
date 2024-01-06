@@ -23,3 +23,13 @@
     padding: 1%;
     color: #969BB4;
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px;
+}
