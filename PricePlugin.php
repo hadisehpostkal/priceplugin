@@ -93,8 +93,8 @@ function price_update_options_volt_value($args)
     $field_id = $args['id']; // Name of the select field
     $field_options = $args['options']; // Volts values
 
-    echo "<br><label for='$field_id'>" . esc_html__($args['label']) . "</label>";
-    echo "<select name='$field_id' style='margin-left: 10px;'>"; // Adjust the margin-left value as needed
+    // echo "<br><label for='$field_id'>" . esc_html__($args['id']) . "</label>";
+    echo "<br><select name='$field_id' style='margin-left: 10px;margin-top: 5px;'>"; // Adjust the margin-left value as needed
 
     foreach ($field_options as $value => $label) {
         $selected = db_get_volt_value($value, $field_id);
@@ -280,7 +280,7 @@ function add_kaufpreise($attr, $content = null)
     $table_platin = $wpdb->prefix . "Platinum";
     $option = shortcode_atts([
         'metal' => '',
-        'volt' => '',
+        'vaultlevel' => '',
         'type' => '',
         'lng' => '',
     ], $attr);
@@ -330,28 +330,28 @@ function add_kaufpreise($attr, $content = null)
         </tr>
         <?php foreach ($result as $row) {
             switch (true) {
-                case $option['volt'] == 'standard' && $option['type'] == 'Verkaufspreis' :
+                case $option['vaultlevel'] == 'standard' && $option['type'] == 'Verkaufspreis' :
                     $stufe = $row->BasicPurchase;
                     break;
-                case $option['volt'] == 'standard' && $option['type'] == 'Kaufpreis' :
+                case $option['vaultlevel'] == 'standard' && $option['type'] == 'Kaufpreis' :
                     $stufe = $row->BasicSale;
                     break;
-                case  $option['volt'] == 'advanced' && $option['type'] == 'Verkaufspreis':
+                case  $option['vaultlevel'] == 'advanced' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->AvancedPurchase;
                     break;
-                case  $option['volt'] == 'advanced' && $option['type'] == 'Kaufpreis':
+                case  $option['vaultlevel'] == 'advanced' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->AvancedSale;
                     break;
-                case $option['volt'] == 'superior' && $option['type'] == 'Verkaufspreis':
+                case $option['vaultlevel'] == 'superior' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->SuperiorPurchase;
                     break;
-                case $option['volt'] == 'superior' && $option['type'] == 'Kaufpreis':
+                case $option['vaultlevel'] == 'superior' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->SuperiorSale;
                     break;
-                case $option['volt'] == 'institutional' && $option['type'] == 'Verkaufspreis':
+                case $option['vaultlevel'] == 'institutional' && $option['type'] == 'Verkaufspreis':
                     $stufe = $row->InstutionalPurchase;
                     break;
-                case $option['volt'] == 'institutional' && $option['type'] == 'Kaufpreis':
+                case $option['vaultlevel'] == 'institutional' && $option['type'] == 'Kaufpreis':
                     $stufe = $row->InstutionalSale;
                     break;
             }
