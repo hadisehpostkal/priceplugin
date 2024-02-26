@@ -52,6 +52,27 @@ th, td {
 }
 .investment-amount {
     float:right;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="20" viewBox="0 0 50 20"><text id="currency-text" x="20" y="13" font-size="7" fill="gray">CHF</text></svg>');
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10%) center;;
+    background-size: auto 100%;
+}
+.custom-common {
+    .investment-amount {
+        border-radius: 20px;
+        width:30%;
+    }
+}
+@media screen and (max-width: 971px) {
+    .custom-common {
+        .investment-amount {
+            width: 90%;
+            border-radius: 20px;
+        }
+    }
+}
+input[type="text"] {
+    padding-left: 5%;
 }
 /* Haupt-Range-Stile */
 input[type="range"] {

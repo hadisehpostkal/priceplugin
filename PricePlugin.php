@@ -400,7 +400,7 @@ function add_sliderpreis($attr, $content = null)
             <form class="slider-form" id="slider-form-<?php echo $unique_id; ?>">
                 <?php wp_nonce_field('custom_text_nonce', 'custom_text_nonce') ?>
                 <p class="custom-common"><b>Wie viel möchten Sie investieren?</b>
-                    <input type="text" style="border-radius: 20px;width:30%;" name="preis" oninput="updateInvestment<?php echo $unique_id; ?>(this.value)"
+                    <input type="text" name="preis" oninput="updateInvestment<?php echo $unique_id; ?>(this.value)"
                            class="investment-amount" id="investment-amount<?php echo $unique_id; ?>"
                            placeholder="250.000 CHF">
                 </p>
@@ -461,7 +461,7 @@ function add_sliderpreis($attr, $content = null)
                 amount.value = Math.round(event.target.value);
             });
             rangeElement.addEventListener("mousemove", (event) => {
-                amount.value = Math.round(event.target.value);
+                amount.value = event.target.value;
                 var x = (event.target.value - rangeElement.min) / (rangeElement.max - rangeElement.min) * 100;
                 var color = 'linear-gradient(90deg, rgb(10, 210, 240) ' + x + '%, #274956 ' + x + '%)';
                 rangeElement.style.background = color;
