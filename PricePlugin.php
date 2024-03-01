@@ -460,10 +460,11 @@ function add_sliderpreis($attr, $content = null)
             clearTimeout(timer);
             timer = setTimeout(function () {
                 var nonce = '<?php echo wp_create_nonce('custom_text_nonce'); ?>';
-                //value = value.replace(/\./g, '');
+                // value = value.replace(/\./g, '');
+                //value = value.replace(',', '.'); //für berechnung muss . anstatt , in preis sein
                 var data = {
                     action: 'custom_frontend_ajax',
-                    preis: value,
+                    preis: amount.replace(/\./g, ''),
                     metal: '<?php echo $option['metal']; ?>',
                     lng: '<?php echo $option['lng']; ?>',
                     custom_text_nonce: nonce
@@ -475,13 +476,14 @@ function add_sliderpreis($attr, $content = null)
                 });
             }, 1000);
         }
+
         function rangeInput<?php echo $unique_id; ?>() {
-            var fixedText = ' CHF';
             var amount = document.getElementById('investment-amount<?php echo $unique_id; ?>');
             var rangeElement = document.getElementById('range<?php echo $unique_id; ?>');
 
             rangeElement.addEventListener("input", (event) => {
-                amount.value = Math.round(event.target.value);
+                amount.value = parseInt(event.target.value).toLocaleString('de-DE');
+                //parseFloat(event.target.value).toLocaleString('de-DE');
                 //Math.round(event.target.value);
                 //  amount.value.toLocaleString("de-DE");
             });
