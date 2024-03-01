@@ -392,27 +392,49 @@ function add_sliderpreis($attr, $content = null)
     ?>
     <div class="container" style="width:100%;">
         <div class="box">
-            <p class="custom-common"><b>Wir zeigen Ihnen, wie viel <?php echo $option['metal'] ?? 'Gold'; ?> Sie aktuell bekommen.</b></p><br>
-            <p class="custom-common">Wählen Sie hier Ihr gewünschtes Investment aus. Die gezeigten Werte sind abhängig von Ihrer aktuellen
-                Vault-Stufe.</p>
+            <p class="custom-common"><b><?php if ($option['lng'] == 'EN') {
+                        echo "We'll show you how much platinum you're currently getting.";
+                    } else {
+                        echo "Wir zeigen Ihnen, wie viel ";
+                    } echo $option['metal'] ?? 'Gold'; if ($option['lng'] == 'EN') {
+                        echo " you currently get.";
+                    } else {
+                        echo " Sie aktuell bekommen.";
+                    }?></b></p><br>
+            <p class="custom-common"><?php if ($option['lng'] == 'EN') {
+                    echo "Select your desired investment here. The values shown depend on your current one Vault level.";
+                } else {
+                    echo "Wählen Sie hier Ihr gewünschtes Investment aus. Die gezeigten Werte sind abhängig von Ihrer aktuellen
+                Vault-Stufe.";
+                }?></p>
         </div>
         <div class="box">
             <form class="slider-form" id="slider-form-<?php echo $unique_id; ?>">
                 <?php wp_nonce_field('custom_text_nonce', 'custom_text_nonce') ?>
-                <p class="custom-common"><b>Wie viel möchten Sie investieren?</b>
-                    <input type="text" name="preis" oninput="updateInvestment<?php echo $unique_id; ?>(this.value)"
+                <p class="custom-common"><b><?php if ($option['lng'] == 'EN') {
+                            echo "How much do you want to invest?";
+                        } else {
+                            echo "Wie viel möchten Sie investieren?";
+                        }?></b>
+                    <input type="text"  name="preis" oninput="updateInvestment<?php echo $unique_id; ?>(this.value)"
                            class="investment-amount" id="investment-amount<?php echo $unique_id; ?>"
-                           placeholder="250.000 CHF">
+                           placeholder="250.000">
                 </p>
                 <br>
                 <input type="range" min="0" max="20000000" class="range" id="range<?php echo $unique_id; ?>"
                        onchange="updateInvestment<?php echo $unique_id; ?>(this.value)" step="any" value="250000"
                        oninput="rangeInput<?php echo $unique_id; ?>()">
-                <br><p class="custom-common">Sie erhalten für Ihr Investment <b
+                <br><p class="custom-common"><?php if ($option['lng'] == 'EN') {
+                        echo "You get for your investment ";
+                    } else {
+                        echo "Sie erhalten für Ihr Investment ";
+                    }?><b
                             id="result<?php echo $unique_id; ?>"></b><b><?php echo $option['metal'] ?? 'Gold'; ?></b>
                 </p>
                 <input type="text" id="metal<?php echo $unique_id; ?>" name="metal" hidden="hidden"
                        value="<?= $option['metal'] ?>">
+                <input type="text" id="lng<?php echo $unique_id; ?>" name="lng" hidden="hidden"
+                       value="<?php echo $option['lng']; ?>">
                 <p class="custom-common custom-cell">
                     <?php
                     if ($option['lng'] == 'EN') {
@@ -438,11 +460,12 @@ function add_sliderpreis($attr, $content = null)
             clearTimeout(timer);
             timer = setTimeout(function () {
                 var nonce = '<?php echo wp_create_nonce('custom_text_nonce'); ?>';
-
+                //value = value.replace(/\./g, '');
                 var data = {
                     action: 'custom_frontend_ajax',
                     preis: value,
                     metal: '<?php echo $option['metal']; ?>',
+                    lng: '<?php echo $option['lng']; ?>',
                     custom_text_nonce: nonce
                 };
 
@@ -459,13 +482,16 @@ function add_sliderpreis($attr, $content = null)
 
             rangeElement.addEventListener("input", (event) => {
                 amount.value = Math.round(event.target.value);
+                //Math.round(event.target.value);
+                //  amount.value.toLocaleString("de-DE");
             });
             rangeElement.addEventListener("mousemove", (event) => {
-                amount.value = event.target.value;
+                //amount.value = event.target.value;
                 var x = (event.target.value - rangeElement.min) / (rangeElement.max - rangeElement.min) * 100;
                 var color = 'linear-gradient(90deg, rgb(10, 210, 240) ' + x + '%, #274956 ' + x + '%)';
                 rangeElement.style.background = color;
             });
+
         }
 
     </script>
@@ -481,15 +507,16 @@ function save_custom_frontend_form()
     if (isset($_POST['preis']) && isset($_POST['custom_text_nonce']) && wp_verify_nonce($_POST['custom_text_nonce'], 'custom_text_nonce')) {
         $preis = sanitize_text_field($_POST['preis']);
         $metal = sanitize_text_field($_POST['metal']);
+        $lng = sanitize_text_field($_POST['lng']);
 
         update_option('_custom_text_frontend', $preis);
-        $gramm = sanitize_text_field(priceToGramm($preis, $metal));
+        $gramm = sanitize_text_field(priceToGramm($preis, $metal,$lng));
         echo esc_attr($gramm) . " g ";
         exit();
     }
 }
 
-function priceToGramm($preis, $metal)
+function priceToGramm($preis, $metal ,$lng )
 {
     global $wpdb;
     $table_gold = $wpdb->prefix . "Gold";
@@ -546,6 +573,11 @@ function priceToGramm($preis, $metal)
     }
 
     $roundGramm = round($gramm, 2);
-    return $roundGramm;
+    if ($lng == 'EN') {
+        $formatWert = number_format($roundGramm, 2, '.', ',');
+    } else {
+        $formatWert = number_format($roundGramm, 2, ',', '.');
+    }
+    return $formatWert;
 }
 ?>
